@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { getProfile, updateProfile, verifyEmail } from '../apis/apiCalls'
 import CustomInput from '../components/CustomInput';
 import CustomButton from '../components/CustomButton';
+import { useNavigate } from 'react-router-dom';
 function WelcomeScreen() {
     const [userData ,setUserData]=useState({userName:'',imageUrl:''});
     const [show,setShow]=useState(false);
+    const navigate=useNavigate()
     useEffect(()=>{
         fetchUser();
     },[])
@@ -49,11 +51,14 @@ function WelcomeScreen() {
     const handleVerifyEmail=async()=>{
         try {
             const response=await verifyEmail();
-            console.log('resposne fromt he verufy email',response);
         } catch (error) {
             console.error("the error in the handle verify email",error);
             
         }
+    }
+    const handleLogout=()=>{
+        localStorage.removeItem('expense-user');
+        navigate('/')
     }
   return (
     <div style={{
@@ -76,10 +81,10 @@ function WelcomeScreen() {
         </div>
         <div style={{ display:'flex',flexDirection:'row'}}>
             <CustomButton type='button' onClick={handleVerifyEmail} title='Verify Email' style={{marginRight:25,width:100}}/>
-            {/* <CustomButton type='button' onClick={()=>localStorage.removeItem('expense-user')} title='Log out' style={{marginRight:25,width:100}}/> */}
-<p style={{fontWeight:'light',fontStyle:'italic',paddingLeft:10,paddingRight:10,marginRight:20,padding:8,borderRadius:50,backgroundColor:'#c0c0c0',color:'#303030'}}>
+            <CustomButton type='button' onClick={handleLogout} title='Log out' style={{marginRight:25,width:100}}/>
+<p style={{fontWeight:'light',minWidth:300,fontStyle:'italic',paddingLeft:10,paddingRight:10,marginRight:20,padding:8,borderRadius:50,backgroundColor:'#c0c0c0',color:'#303030'}}>
 
-        Your profile is Incomplete.<span style={{color:'blue',cursor: 'pointer', textDecoration: 'underline'}} onClick={()=>{setShow(true);console.log('its working')}}>Complete now</span>
+        Your profile is Incomplete.<span style={{color:'blue',cursor: 'pointer', textDecoration: 'underline'}} onClick={()=>setShow(true)}>Complete now</span>
 
         </p>
         </div>
