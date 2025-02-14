@@ -1,10 +1,33 @@
-import React, { useState } from 'react'
-import { updateProfile } from '../apis/apiCalls'
+import React, { useEffect, useState } from 'react'
+import { getProfile, updateProfile } from '../apis/apiCalls'
 import CustomInput from '../components/CustomInput';
 import CustomButton from '../components/CustomButton';
 function WelcomeScreen() {
     const [userData ,setUserData]=useState({userName:'',imageUrl:''});
     const [show,setShow]=useState(false);
+    useEffect(()=>{
+        fetchUser();
+    },[])
+
+    const fetchUser=async()=>{
+        try {
+            
+            const user=JSON.parse(localStorage.getItem('expense-user'));
+            if(user?.idToken){
+                setShow(true);
+                const response= await getProfile();
+                const data=response.users[0];
+                setUserData({
+                    userName:data.displayName,
+                    imageUrl:data.photoUrl
+                })
+            }
+        } catch (error) {
+            console.error(error);
+            
+        }
+    }
+
     const update=async(e)=>{
         try {
             e.preventDefault();
@@ -55,7 +78,9 @@ function WelcomeScreen() {
                 <h4>
                     Contact Details
                 </h4>
-                <button type='button' style={{backgroundColor:'white',padding:5,color:'red',border:'1px solid red',fontWeight:'700',borderRadius:5}}>
+                <button type='button' style={{backgroundColor:'white',padding:5,color:'red',border:'1px solid red',fontWeight:'700',borderRadius:5}}
+                onClick={()=>setShow(false)}
+                >
                     Cancel
                 </button>
             </div>
@@ -66,6 +91,7 @@ function WelcomeScreen() {
                         name="userName"
                         required={true}
                         placeholder={"Full Name"}
+                        value={userData.userName}
                         title="Full Name"/>
                 <CustomInput  type={"imageUrl"}
                         onChange={handleChange}
@@ -73,13 +99,14 @@ function WelcomeScreen() {
                         name="imageUrl"
                         required={true}
                         placeholder={"URL"}
+                        value={userData.imageUrl}
                         title="Profile Photo URL"/>
             </div>
         <CustomButton  type={'button'}
                         title={'Update'}
                         disabled={!userData.userName || !userData.imageUrl
                         }
-                        style={{marginTop:20,width:'10%',}}
+                        style={{marginTop:20,width:70,}}
                         onClick={update}/>
         </div>}
         </div>

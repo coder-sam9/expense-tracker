@@ -1,7 +1,8 @@
 import api from "./api";
 
 const user = localStorage.getItem("expense-user");
-const token = JSON.parse(user).idToken;
+
+const token = JSON.parse(user)?.idToken;
 export const updateProfile = async (name, imageUrl) => {
   try {
     const resposne = await api.post(":update", {
@@ -9,6 +10,17 @@ export const updateProfile = async (name, imageUrl) => {
       photoUrl:imageUrl,
       idToken: token,
       returnSecureToken: true,
+    });
+    return resposne.data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+export const getProfile = async () => {
+  try {
+    const resposne = await api.post(":lookup", {
+      idToken: token,
     });
     return resposne.data;
   } catch (error) {

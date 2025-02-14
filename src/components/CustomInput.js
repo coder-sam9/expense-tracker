@@ -27,6 +27,7 @@ function CustomInput(props) {
             <div style={{ display: 'flex', alignItems: 'center' }}>
               
             <input
+            {...props}
             type={props.type !== 'password' ? props.type : showPassword ? 'text' : 'password'}
 
                 style={{
@@ -47,6 +48,7 @@ function CustomInput(props) {
                 id={props.id}
                 // Add any additional props here
                  // Spread all other props directly
+
             />
             {props.type === 'password' && (
                     <div
