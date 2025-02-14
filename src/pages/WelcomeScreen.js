@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getProfile, updateProfile } from '../apis/apiCalls'
+import { getProfile, updateProfile, verifyEmail } from '../apis/apiCalls'
 import CustomInput from '../components/CustomInput';
 import CustomButton from '../components/CustomButton';
 function WelcomeScreen() {
@@ -46,6 +46,15 @@ function WelcomeScreen() {
             [name]: value,
         }));
     };
+    const handleVerifyEmail=async()=>{
+        try {
+            const response=await verifyEmail();
+            console.log('resposne fromt he verufy email',response);
+        } catch (error) {
+            console.error("the error in the handle verify email",error);
+            
+        }
+    }
   return (
     <div style={{
         height: "100vh",
@@ -65,7 +74,9 @@ function WelcomeScreen() {
 
         </p>
         </div>
-        <div style={{}}>
+        <div style={{ display:'flex',flexDirection:'row'}}>
+            <CustomButton type='button' onClick={handleVerifyEmail} title='Verify Email' style={{marginRight:25,width:100}}/>
+            {/* <CustomButton type='button' onClick={()=>localStorage.removeItem('expense-user')} title='Log out' style={{marginRight:25,width:100}}/> */}
 <p style={{fontWeight:'light',fontStyle:'italic',paddingLeft:10,paddingRight:10,marginRight:20,padding:8,borderRadius:50,backgroundColor:'#c0c0c0',color:'#303030'}}>
 
         Your profile is Incomplete.<span style={{color:'blue',cursor: 'pointer', textDecoration: 'underline'}} onClick={()=>{setShow(true);console.log('its working')}}>Complete now</span>
