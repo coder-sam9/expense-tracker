@@ -1,30 +1,57 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import LoginScreen from "./pages/LoginScreen";
-import WelcomeScreen from "./pages/WelcomeScreen";
+import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import LoginScreen from "./pages/Login/LoginScreen";
+import WelcomeScreen from "./pages/welcome/WelcomeScreen";
+import { useContext, useEffect, useState } from "react";
+import ExpensesContext from "./store/expenses-context";
 
+// Protected Route Component
+
+const ProtectedRoute=({isLogged})=>{
+  if (isLogged) {
+   return  <Outlet/>
+  } else {
+   return <Navigate to="/login" replace />;
+  }
+}
 function App() {
-  const user = JSON.parse(localStorage.getItem("expense-user"));
-
+  const userData=JSON.parse(localStorage.getItem('expense-user'));
+  const { addUserInfo,changeLoginStatus } = useContext(ExpensesContext);
+  // const [isLoggedIn,setIsLoggedIn]=useState(false);
+   useEffect(()=>{
+    console.log(userData);
+    if(userData?.idToken!==undefined){
+      // setIsLoggedIn(true)
+      changeLoginStatus(true);
+      addUserInfo(userData)
+    }
+    
+  },[])
   return (
-    <div
-      style={{
-        backgroundImage: "url(/backgroundImage.png)",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundAttachment: "fixed",
-        minHeight: "100vh", // Ensure full viewport height
-        width: "100vw", // Ensure full viewport width
-      }}
-    >
       <Router>
-        <Routes>
-          {/* Redirect to Welcome if logged in, else show Login */}
-          <Route path="/" element={user?.idToken ? <Navigate replace to="/welcome" /> : <LoginScreen />} />
-          <Route path="/welcome" element={<WelcomeScreen />} />
-        </Routes>
+        <div
+          style={{
+            backgroundImage: "url(/backgroundImage.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "fixed",
+            minHeight: "100vh",
+            width: "100vw",
+          }}
+        >
+          <Routes>
+            <Route path="/login" element={userData?.idToken!==undefined?<Navigate to={'/'}replace/>:<LoginScreen />} />
+
+            {/* Protected Routes */}
+            <Route element={<ProtectedRoute isLogged={!!userData?.idToken} />}>
+              <Route path="/" element={<WelcomeScreen />} />
+            </Route>
+
+            {/* Redirect unknown routes to Login */}
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </div>
       </Router>
-    </div>
   );
 }
 

@@ -23,3 +23,15 @@ export const signUp=async(email,password)=>{
         throw error;
     }
     }
+export const resetPassword=async(email)=>{
+    try {
+        console.log('in the reset email',email)
+        const resposne =await Api.post(':sendOobCode',{
+            email,requestType:'PASSWORD_RESET'
+        });
+        return resposne.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+    }

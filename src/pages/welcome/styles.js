@@ -1,0 +1,83 @@
+const styles = {
+    container: {
+        height: "100vh",
+        width: "100vw",
+        display: "flex",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        flexDirection: 'column',
+        backgroundColor: 'white',
+    },
+    header: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        width: '100%',
+        border: '1px solid black',
+        alignItems: 'center',
+    },
+    welcomeText: {
+        padding: 20,
+    },
+    welcomeMessage: {
+        fontWeight: '500',
+        fontStyle: 'italic',
+    },
+    buttonContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+    },
+    profileIncomplete: {
+        fontWeight: 'light',
+        minWidth: 300,
+        fontStyle: 'italic',
+        paddingLeft: 10,
+        paddingRight: 10,
+        marginRight: 20,
+        padding: 8,
+        borderRadius: 50,
+        backgroundColor: '#c0c0c0',
+        color: '#303030',
+    },
+    completeNow: {
+        color: 'blue',
+        cursor: 'pointer',
+        textDecoration: 'underline',
+    },
+    profileForm: {
+        padding: 20,
+        display: 'flex',
+        flexDirection: 'column',
+        width: '50%',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        boxShadow: '2px 2px 5px 5px grey',
+        marginTop: 20,
+    },
+    formHeader: {
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+        justifyContent: 'space-between',
+        paddingInline: 20,
+    },
+    cancelButton: {
+        backgroundColor: 'white',
+        padding: 5,
+        color: 'red',
+        border: '1px solid red',
+        fontWeight: '700',
+        borderRadius: 5,
+    },
+    inputContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        justifyContent: 'space-between',
+        paddingInline: 20,
+    },
+    updateButton: {
+        marginTop: 20,
+        width: 70,
+    },
+};
+export default styles;
