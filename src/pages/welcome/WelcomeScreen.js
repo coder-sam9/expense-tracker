@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { getProfile, updateProfile, verifyEmail } from '../../apis/apiCalls';
+import { getProfile, updateProfile, verifyEmail } from '../../apis/profileCalls';
 import CustomInput from '../../components/UI/CustomInput';
 import CustomButton from '../../components/UI/CustomButton';
 import { useNavigate } from 'react-router-dom';

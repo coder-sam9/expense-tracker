@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CustomInput from "../../components/UI/CustomInput";
 import CustomButton from "../../components/UI/CustomButton";
 import styles from "./ExpensesScreen.module.css"; // Optional: Add CSS for styling
 import AddExpenseForm from "../../components/Layout/AddExpenseForm";
 import ExpenseItem from "../../components/Layout/ExpenseItem";
+import { addExpense, getExpenses } from "../../apis/expenseCalls";
 
 function ExpensesScreen() {
     // State to manage form inputs
@@ -13,6 +14,7 @@ function ExpensesScreen() {
       category: "Food", // Default category
   });
   const [expenses, setExpenses] = useState([]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setExpense((prev) => ({
@@ -21,20 +23,47 @@ function ExpensesScreen() {
     }));
 };  
 
+const fetchExpenses=async () => {
+  try{
+  const response=await getExpenses();
+  console.log("in the fetche xpenses call",response);
+  setExpenses(()=>{
+    const transformedResponse=
+    Object.keys(response).map((key)=>{
+const obj={
+  id:key,
+  ...response[key]
+}
+return obj;
+    })
+    return transformedResponse;
+  })
+  }
+  catch(error){
+    console.error(error);
+    
+  }
+}
+useEffect(()=>{
+  fetchExpenses()
+},[])
     // Handler for form submission
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
       e.preventDefault();
-  
+  try {
+    
       // Validate inputs
       if (!expense.amount || !expense.description || !expense.category) {
           alert("Please fill all fields.");
           return;
       }
-      
-    setExpenses((prevExpenses) => [...prevExpenses, expense]);
   
       // Log the expense (replace with API call)
-      console.log("Expense Added:", expense);
+      const resposne = await addExpense(expense.category,expense.amount,expense.description);
+      if(resposne.ok){
+        fetchExpenses()
+      }
+      console.log(resposne);
   
       // Clear the form
       setExpense({
@@ -42,6 +71,11 @@ function ExpensesScreen() {
           description: "",
           category: "Food",
       });
+      
+  } catch (error) {
+   console.error(error);
+    
+  }
   };
 
     return (
@@ -55,11 +89,16 @@ function ExpensesScreen() {
     expense={expense}
 />
     </div>
+    <div className={styles.container} style={{marginTop:20,backgroundColor:'whitesmoke'}}>
+      <h3>
+        Your Expenses
+      </h3>
     <div className={styles.expensesList}>
     {expenses.map((expense, index) => (
         <ExpenseItem key={index} expense={expense} />
     ))}
 </div>
+      </div>
         </div>
     );
 }
