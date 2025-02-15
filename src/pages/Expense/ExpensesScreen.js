@@ -4,16 +4,18 @@ import CustomButton from "../../components/UI/CustomButton";
 import styles from "./ExpensesScreen.module.css"; // Optional: Add CSS for styling
 import AddExpenseForm from "../../components/Layout/AddExpenseForm";
 import ExpenseItem from "../../components/Layout/ExpenseItem";
-import { addExpense, getExpenses } from "../../apis/expenseCalls";
+import { addExpense, getExpenses, updateExpense,deleteExpense } from "../../apis/expenseCalls";
 
 function ExpensesScreen() {
     // State to manage form inputs
     const [expense, setExpense] = useState({
+      id:'',
       amount: "",
       description: "",
       category: "Food", // Default category
   });
   const [expenses, setExpenses] = useState([]);
+  const [isEdit,setIsEdit]=useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,6 +46,24 @@ return obj;
     
   }
 }
+const editExpense=async (item) => {
+  setExpense(item);setIsEdit(true);
+  setExpenses((prev)=>{
+    return prev.filter(ele=>ele.id!=item.id)
+  })
+}
+const removeExpense=async (id) => {
+  try {
+    
+    const response=await deleteExpense(id);
+    console.log("edit response call",response);
+    
+    fetchExpenses();
+  } catch (error) {
+    console.error(error);
+    
+  }
+}
 useEffect(()=>{
   fetchExpenses()
 },[])
@@ -51,13 +71,17 @@ useEffect(()=>{
     const handleSubmit = async (e) => {
       e.preventDefault();
   try {
-    
       // Validate inputs
       if (!expense.amount || !expense.description || !expense.category) {
           alert("Please fill all fields.");
           return;
       }
-  
+  if(isEdit){
+    const response=await updateExpense(expense.id,expense.category,expense.amount,expense.description);
+        fetchExpenses()
+      console.log(response);
+      return
+  }
       // Log the expense (replace with API call)
       const resposne = await addExpense(expense.category,expense.amount,expense.description);
       if(resposne.ok){
@@ -95,7 +119,7 @@ useEffect(()=>{
       </h3>
     <div className={styles.expensesList}>
     {expenses.map((expense, index) => (
-        <ExpenseItem key={index} expense={expense} />
+        <ExpenseItem key={index} expense={expense} onEdit={editExpense} onDelete={removeExpense} />
     ))}
 </div>
       </div>

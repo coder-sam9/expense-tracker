@@ -9,3 +9,12 @@
 .expensesList {
     margin-top: 20px;
 }
+.deleteButton{
+    
+    background-color: white;
+    padding: 10px;
+    color: red;
+    border: 1px solid red;
+    font-weight: 700;
+    border-radius: 12px;
+}
