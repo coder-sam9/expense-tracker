@@ -1,0 +1,28 @@
+.container {
+    width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: red;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    
+}
+
+.dropdownContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.dropdown {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { getProfile, updateProfile, verifyEmail } from '../../apis/apiCalls';
-import CustomInput from '../../components/CustomInput';
-import CustomButton from '../../components/CustomButton';
+import CustomInput from '../../components/UI/CustomInput';
+import CustomButton from '../../components/UI/CustomButton';
 import { useNavigate } from 'react-router-dom';
 import ExpensesContext from '../../store/expenses-context';
 
@@ -11,6 +11,7 @@ function WelcomeScreen() {
     const { addUserInfo, changeLoginStatus } = useContext(ExpensesContext);
     const [userData, setUserData] = useState({ userName: '', imageUrl: '' });
     const [show, setShow] = useState(false);
+    const [isVerified, setIsVerified] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,6 +29,7 @@ function WelcomeScreen() {
                     userName: data.displayName,
                     imageUrl: data.photoUrl,
                 });
+                setIsVerified(true);
             }
         } catch (error) {
             console.error(error);
@@ -77,12 +79,19 @@ function WelcomeScreen() {
                     <p style={styles.welcomeMessage}>Welcome to the Expense Tracker!!!</p>
                 </div>
                 <div style={styles.buttonContainer}>
-                    <CustomButton
+                   {isVerified?
+                   <CustomButton
+                   type='button'
+                   onClick={()=>navigate('/expense')}
+                   title='Expenses'
+                   style={{ marginRight: 25, width: 100 }}
+               />
+                   : <CustomButton
                         type='button'
                         onClick={handleVerifyEmail}
                         title='Verify Email'
                         style={{ marginRight: 25, width: 100 }}
-                    />
+                    />}
                     <CustomButton
                         type='button'
                         onClick={handleLogout}

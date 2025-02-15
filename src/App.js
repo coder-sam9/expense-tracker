@@ -3,6 +3,7 @@ import LoginScreen from "./pages/Login/LoginScreen";
 import WelcomeScreen from "./pages/welcome/WelcomeScreen";
 import { useContext, useEffect, useState } from "react";
 import ExpensesContext from "./store/expenses-context";
+import ExpensesScreen from "./pages/Expense/ExpensesScreen";
 
 // Protected Route Component
 
@@ -45,6 +46,7 @@ function App() {
             {/* Protected Routes */}
             <Route element={<ProtectedRoute isLogged={!!userData?.idToken} />}>
               <Route path="/" element={<WelcomeScreen />} />
+              <Route path="/expense" element={<ExpensesScreen />} />
             </Route>
 
             {/* Redirect unknown routes to Login */}

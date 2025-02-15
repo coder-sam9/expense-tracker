@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
-import CustomInput from "../../components/CustomInput";
-import CustomButton from "../../components/CustomButton";
+import CustomInput from "../../components/UI/CustomInput";
+import CustomButton from "../../components/UI/CustomButton";
 import { login, resetPassword, signUp } from "../../apis/auth";
 import { useNavigate } from "react-router-dom";
 import ExpensesContext from "../../store/expenses-context";
