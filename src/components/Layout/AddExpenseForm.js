@@ -3,7 +3,7 @@ import CustomInput from '../UI/CustomInput'
 import CustomButton from '../UI/CustomButton'
 import styles from './AddExpense.module.css'
 
-function AddExpenseForm({ onSubmit, onChange, expense }) {
+function AddExpenseForm({ onSubmit, onChange, expense,showPremium }) {
   return (
       <form onSubmit={onSubmit} className={styles.form}>
           <CustomInput
@@ -42,8 +42,16 @@ function AddExpenseForm({ onSubmit, onChange, expense }) {
                   <option value="Other">Other</option>
               </select>
           </div>
+    {
+        showPremium?
+        (
 
-          <CustomButton type="submit" title={'Add Expense'}/>
+            <CustomButton type="submit" title={'Add Expense'}/>
+        ):(
+            <CustomButton type="submit" title={'Go for premium'}/>
+            
+        )
+    }
       </form>
   );
 }

@@ -6,9 +6,12 @@ import { useNavigate } from "react-router-dom";
 import ExpensesContext from "../../store/expenses-context";
 import styles from "./styles";
 import './LoginScreen.css'
+import { useSelector,useDispatch } from "react-redux";
+import {login as loginReducer} from '../../store/reducers/AuthReducer';
 
 function LoginScreen() {
-    const { changeLoginStatus, addUserInfo } = useContext(ExpensesContext);
+    const dispatch=useDispatch()
+    const {isAuthenticated}=useSelector(state=>state.auth)
     const navigate = useNavigate();
     const [input, setInput] = useState({
         email: '',
@@ -61,9 +64,8 @@ function LoginScreen() {
                 ? await login(input.email, input.password)
                 : await signUp(input.email, input.password);
             console.log(response);
-            changeLoginStatus(true);
             localStorage.setItem('expense-user', JSON.stringify(response));
-            addUserInfo(response);
+            dispatch(loginReducer(response));
 
             alert(isLogin ? "Login successful!" : "Sign-up successful!");
             navigate('/', { replace: true });

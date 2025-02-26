@@ -4,6 +4,8 @@ import WelcomeScreen from "./pages/welcome/WelcomeScreen";
 import { useContext, useEffect, useState } from "react";
 import ExpensesContext from "./store/expenses-context";
 import ExpensesScreen from "./pages/Expense/ExpensesScreen";
+import {login} from './store/reducers/AuthReducer';
+import { useDispatch, useSelector } from "react-redux";
 
 // Protected Route Component
 
@@ -16,14 +18,14 @@ const ProtectedRoute=({isLogged})=>{
 }
 function App() {
   const userData=JSON.parse(localStorage.getItem('expense-user'));
-  const { addUserInfo,changeLoginStatus } = useContext(ExpensesContext);
+const {isAuthenticate,user}=useSelector(state=>state.authentication)
+const dispath=useDispatch();
   // const [isLoggedIn,setIsLoggedIn]=useState(false);
    useEffect(()=>{
     console.log(userData);
     if(userData?.idToken!==undefined){
       // setIsLoggedIn(true)
-      changeLoginStatus(true);
-      addUserInfo(userData)
+      dispath(login(userData))
     }
     
   },[])

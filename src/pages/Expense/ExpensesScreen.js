@@ -4,127 +4,171 @@ import CustomButton from "../../components/UI/CustomButton";
 import styles from "./ExpensesScreen.module.css"; // Optional: Add CSS for styling
 import AddExpenseForm from "../../components/Layout/AddExpenseForm";
 import ExpenseItem from "../../components/Layout/ExpenseItem";
-import { addExpense, getExpenses, updateExpense,deleteExpense } from "../../apis/expenseCalls";
+import {
+  addExpenseApi,
+  getExpensesApi,
+  updateExpenseApi,
+  deleteExpenseApi,
+} from "../../apis/expenseCalls";
+import {
+  addAllExpenses,
+  addExpense as addExpenseReducer,
+  removeExpense as removeExpenseReducer,
+  updateExpense
+} from "../../store/reducers/expensesReducer";
+import { useSelector,useDispatch } from "react-redux";
 
-function ExpensesScreen() {
-    // State to manage form inputs
-    const [expense, setExpense] = useState({
-      id:'',
-      amount: "",
-      description: "",
-      category: "Food", // Default category
+const ExpensesScreen=()=> {
+  // State to manage form inputs
+const {totalExpenses,expenses}=useSelector(state=>state.expenses);
+const dispath=useDispatch();
+  const [expense, setExpense] = useState({
+    id: "",
+    amount: "",
+    description: "",
+    category: "Food", // Default category
   });
-  const [expenses, setExpenses] = useState([]);
-  const [isEdit,setIsEdit]=useState(false);
+  const [isEdit, setIsEdit] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setExpense((prev) => ({
-        ...prev,
-        [name]: value,
+      ...prev,
+      [name]: value,
     }));
-};  
-
-const fetchExpenses=async () => {
-  try{
-  const response=await getExpenses();
-  console.log("in the fetche xpenses call",response);
-  setExpenses(()=>{
-    const transformedResponse=
-    Object.keys(response).map((key)=>{
-const obj={
-  id:key,
-  ...response[key]
-}
-return obj;
-    })
-    return transformedResponse;
-  })
-  }
-  catch(error){
-    console.error(error);
-    
-  }
-}
-const editExpense=async (item) => {
-  setExpense(item);setIsEdit(true);
-  setExpenses((prev)=>{
-    return prev.filter(ele=>ele.id!=item.id)
-  })
-}
-const removeExpense=async (id) => {
-  try {
-    
-    const response=await deleteExpense(id);
-    console.log("edit response call",response);
-    
-    fetchExpenses();
-  } catch (error) {
-    console.error(error);
-    
-  }
-}
-useEffect(()=>{
-  fetchExpenses()
-},[])
-    // Handler for form submission
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-  try {
-      // Validate inputs
-      if (!expense.amount || !expense.description || !expense.category) {
-          alert("Please fill all fields.");
-          return;
-      }
-  if(isEdit){
-    const response=await updateExpense(expense.id,expense.category,expense.amount,expense.description);
-        fetchExpenses()
-      console.log(response);
-      return
-  }
-      // Log the expense (replace with API call)
-      const resposne = await addExpense(expense.category,expense.amount,expense.description);
-      if(resposne.ok){
-        fetchExpenses()
-      }
-      console.log(resposne);
-  
-      // Clear the form
-      setExpense({
-          amount: "",
-          description: "",
-          category: "Food",
-      });
-      
-  } catch (error) {
-   console.error(error);
-    
-  }
   };
 
-    return (
-      <div className={styles.screen}>
+  const fetchExpenses = async () => {
+    try {
+      const response = await getExpensesApi();
+      console.log("in the fetche xpenses call", response);
+      const transformedResponse = Object.keys(response ? response : {}).map(
+        (key) => {
+          const obj = {
+            id: key,
+            ...response[key],
+          };
 
-        <div className={styles.container}>
-            <h1>Add Expense</h1>
-            <AddExpenseForm
-    onSubmit={handleSubmit}
-    onChange={handleChange}
-    expense={expense}
-/>
-    </div>
-    <div className={styles.container} style={{marginTop:20,backgroundColor:'whitesmoke'}}>
-      <h3>
-        Your Expenses
-      </h3>
-    <div className={styles.expensesList}>
-    {expenses.map((expense, index) => (
-        <ExpenseItem key={index} expense={expense} onEdit={editExpense} onDelete={removeExpense} />
-    ))}
-</div>
+          return obj;
+        }
+      );
+      dispath(addAllExpenses(transformedResponse));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const editExpense = async (item) => {
+    setExpense(item);
+    setIsEdit(true);
+    
+  };
+  const updateExpenseCall=async()=>{
+    try {
+      
+      const response = await updateExpenseApi(
+        expense.id,
+        expense.category,
+        expense.amount,
+        expense.description
+      );
+      dispath(updateExpense(response))
+      console.log("update epense call", response);
+      // Clear the form
+      setExpense({
+        amount: "",
+        description: "",
+        category: "Food",
+      });
+      fetchExpenses();
+    } catch (error) {
+      console.error(error);
+      
+    }
+    }
+  const removeExpense = async (id) => {
+    try {
+      const response = await deleteExpenseApi(id);
+      console.log("delete response call", response);
+      dispath(removeExpenseReducer(id));
+
+      fetchExpenses();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
+  // Handler for form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Validate inputs
+      if (!expense.amount || !expense.description || !expense.category) {
+        alert("Please fill all fields.");
+        return;
+      }
+      if (Number(totalExpenses)+Number(expense.amount)>10000) {
+        alert(`Your expenses will increase the 10000 threshold,Please add go for premium ${totalExpenses+expense.amount}`);
+        return
+      }
+      if (isEdit) {
+        updateExpenseCall()
+        return;
+      }
+      // Log the expense (replace with API call)
+      const resposne = await addExpenseApi(
+        expense.category,
+        expense.amount,
+        expense.description
+      );
+      if (resposne.ok) {
+        dispath(addExpenseReducer(resposne))
+        fetchExpenses();
+      }
+      console.log("add expense call", resposne);
+
+      // Clear the form
+      setExpense({
+        amount: "",
+        description: "",
+        category: "Food",
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <div className={styles.screen}>
+      <div className={styles.container}>
+        <h1>Add Expense</h1>
+        <AddExpenseForm
+          onSubmit={handleSubmit}
+          onChange={handleChange}
+          expense={expense}
+          showPremium={totalExpenses<=10000}
+        />
       </div>
+      <div
+        className={styles.container}
+        style={{ marginTop: 20, backgroundColor: "whitesmoke" }}
+      >
+        <h3>Your Expenses</h3>
+        <h3>Total Expenses: <span>{totalExpenses}</span> </h3>
+        <div className={styles.expensesList}>
+          {expenses.map((expense, index) => (
+            <ExpenseItem
+              key={index}
+              expense={expense}
+              onEdit={editExpense}
+              onDelete={removeExpense}
+            />
+          ))}
         </div>
-    );
+      </div>
+    </div>
+  );
 }
 
 export default ExpensesScreen;

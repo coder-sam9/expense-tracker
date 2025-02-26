@@ -6,12 +6,16 @@ import { useNavigate } from 'react-router-dom';
 import ExpensesContext from '../../store/expenses-context';
 
 import styles from './styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { login, logout } from '../../store/reducers/AuthReducer';
 
 function WelcomeScreen() {
     const { addUserInfo, changeLoginStatus } = useContext(ExpensesContext);
+    
+const {isAuthenticated,user}=useSelector(state=>state.authentication);
+const dispath=useDispatch();
     const [userData, setUserData] = useState({ userName: '', imageUrl: '' });
     const [show, setShow] = useState(false);
-    const [isVerified, setIsVerified] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -29,7 +33,7 @@ function WelcomeScreen() {
                     userName: data.displayName,
                     imageUrl: data.photoUrl,
                 });
-                setIsVerified(true);
+                dispath(login(data));
             }
         } catch (error) {
             console.error(error);
@@ -67,8 +71,7 @@ function WelcomeScreen() {
 
     const handleLogout = () => {
         localStorage.removeItem('expense-user');
-        addUserInfo({});
-        changeLoginStatus(false);
+        dispath(logout())
         navigate('/', { replace: true });
     };
 
@@ -79,7 +82,7 @@ function WelcomeScreen() {
                     <p style={styles.welcomeMessage}>Welcome to the Expense Tracker!!!</p>
                 </div>
                 <div style={styles.buttonContainer}>
-                   {isVerified?
+                   {isAuthenticated?
                    <CustomButton
                    type='button'
                    onClick={()=>navigate('/expense')}

@@ -2,7 +2,7 @@ import axios from "axios";
 
 const url='https://expensetracker-cae41-default-rtdb.firebaseio.com/'
 
-export const addExpense = async (category, amount,description) => {
+export const addExpenseApi = async (category, amount,description) => {
   try {
     const data={
         category:category,
@@ -20,7 +20,7 @@ export const addExpense = async (category, amount,description) => {
     throw error;
   }
 };
-export const getExpenses = async () => {
+export const getExpensesApi = async () => {
   try {
     console.log("in the get call");
     
@@ -35,7 +35,7 @@ export const getExpenses = async () => {
     throw error;
   }
 };
-export const updateExpense = async (id,category, amount,description) => {
+export const updateExpenseApi = async (id,category, amount,description) => {
   try {
     console.log("in the update call");
     const data={
@@ -54,7 +54,7 @@ export const updateExpense = async (id,category, amount,description) => {
     throw error;
   }
 };
-export const deleteExpense = async (id) => {
+export const deleteExpenseApi = async (id) => {
   try {
     console.log("in the delete call");
     

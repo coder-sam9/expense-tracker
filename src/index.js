@@ -3,13 +3,15 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import ExpenseProvider from './store/ExpenseProvider';
+import { Provider } from 'react-redux';
+import store from './store/store';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ExpenseProvider>
+    <Provider store={store}>
 
     <App />
-    </ExpenseProvider>
+    </Provider>
   </React.StrictMode>
 );
