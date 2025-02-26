@@ -7,7 +7,7 @@ import ExpensesContext from "../../store/expenses-context";
 import styles from "./styles";
 import './LoginScreen.css'
 import { useSelector,useDispatch } from "react-redux";
-import {login as loginReducer} from '../../store/reducers/AuthReducer';
+import {login as loginReducer} from '../../store/slices/AuthSlice';
 
 function LoginScreen() {
     const dispatch=useDispatch()

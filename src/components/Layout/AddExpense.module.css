@@ -26,3 +26,13 @@
     border: 1px solid #ccc;
     font-size: 16px;
 }
+
+.dark {
+    background-color: #1e1e1e;
+    color: white;
+}
+
+.darkDropdown {
+    background-color: #333;
+    color: white;
+}

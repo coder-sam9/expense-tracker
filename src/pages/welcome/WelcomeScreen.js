@@ -7,7 +7,7 @@ import ExpensesContext from '../../store/expenses-context';
 
 import styles from './styles';
 import { useDispatch, useSelector } from 'react-redux';
-import { login, logout } from '../../store/reducers/AuthReducer';
+import { login, logout } from '../../store/slices/AuthSlice';
 
 function WelcomeScreen() {
     const { addUserInfo, changeLoginStatus } = useContext(ExpensesContext);

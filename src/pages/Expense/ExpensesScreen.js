@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import CustomInput from "../../components/UI/CustomInput";
 import CustomButton from "../../components/UI/CustomButton";
 import styles from "./ExpensesScreen.module.css"; // Optional: Add CSS for styling
@@ -15,11 +15,14 @@ import {
   addExpense as addExpenseReducer,
   removeExpense as removeExpenseReducer,
   updateExpense
-} from "../../store/reducers/expensesReducer";
+} from "../../store/slices/expensesSlice";
 import { useSelector,useDispatch } from "react-redux";
+import { ThemeContext } from "../../store/ThemeProvider";
 
 const ExpensesScreen=()=> {
   // State to manage form inputs
+  
+  const { theme, dispatch } = useContext(ThemeContext);
 const {totalExpenses,expenses}=useSelector(state=>state.expenses);
 const dispath=useDispatch();
   const [expense, setExpense] = useState({
@@ -110,7 +113,6 @@ const dispath=useDispatch();
       }
       if (Number(totalExpenses)+Number(expense.amount)>10000) {
         alert(`Your expenses will increase the 10000 threshold,Please add go for premium ${totalExpenses+expense.amount}`);
-        return
       }
       if (isEdit) {
         updateExpenseCall()
@@ -140,34 +142,35 @@ const dispath=useDispatch();
   };
 
   return (
-    <div className={styles.screen}>
-      <div className={styles.container}>
-        <h1>Add Expense</h1>
-        <AddExpenseForm
-          onSubmit={handleSubmit}
-          onChange={handleChange}
-          expense={expense}
-          showPremium={totalExpenses<=10000}
-        />
-      </div>
-      <div
-        className={styles.container}
-        style={{ marginTop: 20, backgroundColor: "whitesmoke" }}
-      >
-        <h3>Your Expenses</h3>
-        <h3>Total Expenses: <span>{totalExpenses}</span> </h3>
-        <div className={styles.expensesList}>
-          {expenses.map((expense, index) => (
-            <ExpenseItem
-              key={index}
-              expense={expense}
-              onEdit={editExpense}
-              onDelete={removeExpense}
-            />
-          ))}
+      <div className={`${styles.screen} ${theme === "dark" ? styles.dark : styles.light}`}>
+        <div className={styles.container}>
+          <h1>Add Expense</h1>
+          <AddExpenseForm
+            onSubmit={handleSubmit}
+            onChange={handleChange}
+            expense={expense}
+            showPremium={totalExpenses>=10000}
+          />
+        </div>
+        <div
+          className={`${styles.container} ${theme === "dark" ? styles.darkContainer : ""}`}
+        >
+          <h3>Your Expenses</h3>
+          <h3>Total Expenses: <span>{totalExpenses}</span> </h3>
+          <div className={styles.expensesList}>
+            {expenses.map((expense, index) => (
+              <ExpenseItem
+                key={index}
+                expense={expense}
+                onEdit={editExpense}
+                onDelete={removeExpense}
+              />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+
+  
   );
 }
 

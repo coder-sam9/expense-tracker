@@ -4,8 +4,9 @@ import WelcomeScreen from "./pages/welcome/WelcomeScreen";
 import { useContext, useEffect, useState } from "react";
 import ExpensesContext from "./store/expenses-context";
 import ExpensesScreen from "./pages/Expense/ExpensesScreen";
-import {login} from './store/reducers/AuthReducer';
+import {login} from './store/slices/AuthSlice';
 import { useDispatch, useSelector } from "react-redux";
+import { ThemeProvider } from "./store/ThemeProvider";
 
 // Protected Route Component
 
@@ -30,6 +31,7 @@ const dispath=useDispatch();
     
   },[])
   return (
+    <ThemeProvider> 
       <Router>
         <div
           style={{
@@ -41,7 +43,7 @@ const dispath=useDispatch();
             minHeight: "100vh",
             width: "100vw",
           }}
-        >
+          >
           <Routes>
             <Route path="/login" element={userData?.idToken!==undefined?<Navigate to={'/'}replace/>:<LoginScreen />} />
 
@@ -56,6 +58,7 @@ const dispath=useDispatch();
           </Routes>
         </div>
       </Router>
+          </ThemeProvider>
   );
 }
 
