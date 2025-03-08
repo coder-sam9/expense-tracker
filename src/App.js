@@ -44,7 +44,7 @@ const dispatch=useDispatch();
   }
   return (
     <ThemeProvider> 
-      <Router>
+      <Router basename="/expense-tracker">
         <div
           style={{
             backgroundImage: "url(/backgroundImage.png)",
