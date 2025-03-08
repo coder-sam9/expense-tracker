@@ -17,4 +17,5 @@
     border: 1px solid red;
     font-weight: 700;
     border-radius: 12px;
+    cursor: pointer;
 }

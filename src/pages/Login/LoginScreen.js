@@ -3,15 +3,15 @@ import CustomInput from "../../components/UI/CustomInput";
 import CustomButton from "../../components/UI/CustomButton";
 import { login, resetPassword, signUp } from "../../apis/auth";
 import { useNavigate } from "react-router-dom";
-import ExpensesContext from "../../store/expenses-context";
 import styles from "./styles";
 import './LoginScreen.css'
 import { useSelector,useDispatch } from "react-redux";
 import {login as loginReducer} from '../../store/slices/AuthSlice';
+import { initializeUserApi } from "../../apis/expenseCalls";
 
 function LoginScreen() {
     const dispatch=useDispatch()
-    const {isAuthenticated}=useSelector(state=>state.auth)
+    // const {isAuthenticated}=useSelector(state=>state.authentication)
     const navigate = useNavigate();
     const [input, setInput] = useState({
         email: '',
@@ -66,7 +66,7 @@ function LoginScreen() {
             console.log(response);
             localStorage.setItem('expense-user', JSON.stringify(response));
             dispatch(loginReducer(response));
-
+            await initializeUserApi(input.email);
             alert(isLogin ? "Login successful!" : "Sign-up successful!");
             navigate('/', { replace: true });
         } catch (error) {

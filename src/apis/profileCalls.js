@@ -22,6 +22,8 @@ export const updateProfile = async (name, imageUrl) => {
 
 export const getProfile = async () => {
   try {
+    console.log("In getProfile");
+    
     const token = getToken(); // Fetch latest token dynamically
     const response = await api.post(":lookup", {
       idToken: token,

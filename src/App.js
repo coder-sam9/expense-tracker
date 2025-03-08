@@ -2,11 +2,13 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-
 import LoginScreen from "./pages/Login/LoginScreen";
 import WelcomeScreen from "./pages/welcome/WelcomeScreen";
 import { useContext, useEffect, useState } from "react";
-import ExpensesContext from "./store/expenses-context";
 import ExpensesScreen from "./pages/Expense/ExpensesScreen";
 import {login} from './store/slices/AuthSlice';
 import { useDispatch, useSelector } from "react-redux";
 import { ThemeProvider } from "./store/ThemeProvider";
+import Greetings from "./components/Greetings";
+import { fetchExpenses, fetchUserPremiumStatusThunk } from "./store/slices/expensesSlice";
+import Loader from "./components/UI/Loader";
 
 // Protected Route Component
 
@@ -19,17 +21,27 @@ const ProtectedRoute=({isLogged})=>{
 }
 function App() {
   const userData=JSON.parse(localStorage.getItem('expense-user'));
-const {isAuthenticate,user}=useSelector(state=>state.authentication)
-const dispath=useDispatch();
+  const [loading,setLoading]=useState(false);
+const {isAuthenticated,user}=useSelector(state=>state.authentication)
+const dispatch=useDispatch();
   // const [isLoggedIn,setIsLoggedIn]=useState(false);
    useEffect(()=>{
+    const initializeData = async () => {
+      setLoading(true);
     console.log(userData);
     if(userData?.idToken!==undefined){
       // setIsLoggedIn(true)
-      dispath(login(userData))
+     await dispatch(login(userData)).unwrap()
+     await dispatch(fetchUserPremiumStatusThunk()).unwrap()
+     await dispatch(fetchExpenses()).unwrap()
     }
-    
+    setLoading(false);
+  }
   },[])
+  if (loading) {
+    return <Loader/>
+    
+  }
   return (
     <ThemeProvider> 
       <Router>

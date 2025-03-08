@@ -1,4 +1,5 @@
 import React from "react";
+import '../../styles/variables.css';
 
 function CustomButton(props) {
   return (
@@ -15,32 +16,29 @@ function CustomButton(props) {
 
     //   }}
     // >
-    <button type={props.type} style={{
+    <button 
+      type={props.type} 
+      style={{
         width: "100%",
         alignSelf: "center",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#0f61dd",
-        borderRadius:12,
-        padding:5,
-        fontSize:16,
-        outline:'none',
-        color:'white',
-        border:'none',
-        paddingTop:10,
-        paddingBottom:10,
-        backgroundColor: props.disabled ? "#ccc" : "#007bff",
-                cursor: props.disabled ? "not-allowed" : "pointer",
-                transition: "background-color 0.3s, transform 0.1s",
+        backgroundColor: props.disabled ? 'var(--disabled-color)' : 'var(--primary-color)',
+        borderRadius: 'var(--border-radius-md)',
+        padding: 'var(--padding-md)',
+        fontSize: 'var(--font-size-md)',
+        outline: 'none',
+        color: 'white',
+        border: 'none',
+        cursor: props.disabled ? "not-allowed" : "pointer",
+        transition: "background-color 0.3s, transform 0.1s",
         ...props.style
-        
-    }} 
-   onClick={props.onClick}
+      }} 
+      onClick={props.onClick}
     >
-        
-        {props.title}
-        </button>
+      {props.title}
+    </button>
     /* </div> */
   );
 }

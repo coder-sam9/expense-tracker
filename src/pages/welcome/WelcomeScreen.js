@@ -3,61 +3,88 @@ import { getProfile, updateProfile, verifyEmail } from '../../apis/profileCalls'
 import CustomInput from '../../components/UI/CustomInput';
 import CustomButton from '../../components/UI/CustomButton';
 import { useNavigate } from 'react-router-dom';
-import ExpensesContext from '../../store/expenses-context';
 
 import styles from './styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, logout } from '../../store/slices/AuthSlice';
+import { fetchExpenses, fetchUserPremiumStatusThunk,resetState } from '../../store/slices/expensesSlice';
+import Loader from '../../components/UI/Loader';
 
 function WelcomeScreen() {
-    const { addUserInfo, changeLoginStatus } = useContext(ExpensesContext);
     
 const {isAuthenticated,user}=useSelector(state=>state.authentication);
-const dispath=useDispatch();
-    const [userData, setUserData] = useState({ userName: '', imageUrl: '' });
+const dispatch=useDispatch();
+    const [userName, setUserName] = useState('');
+    const [userImageUrl, setUserImageUrl] = useState('');
     const [show, setShow] = useState(false);
+    const [loading,setLoading]=useState(false);
+    const [dataLoading,setDataLoading]=useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchUser();
-    }, []);
-
+        const initializeData = async () => {
+          setDataLoading(true);
+          try {
+            await fetchUser(); // Wait for fetchUser to complete
+            await dispatch(fetchUserPremiumStatusThunk()).unwrap(); // unwrap() to catch thunk errors
+            await dispatch(fetchExpenses()).unwrap();
+          } catch (error) {
+            console.error("Initialization failed:", error);
+          } finally {
+            setDataLoading(false);
+          }
+        };
+      
+        initializeData();
+      }, [dispatch]); // Add dispatch as a dependency
+    if (dataLoading) {
+        return <Loader/>
+        
+    }
     const fetchUser = async () => {
         try {
+            setLoading(true);
             const user = JSON.parse(localStorage.getItem('expense-user'));
             if (user?.idToken) {
+                
                 setShow(true);
                 const response = await getProfile();
                 const data = response.users[0];
-                setUserData({
-                    userName: data.displayName,
-                    imageUrl: data.photoUrl,
-                });
-                dispath(login(data));
+                setUserName(data.displayName);
+                setUserImageUrl(data.photoUrl);
+              
+                dispatch(login(data));
             }
         } catch (error) {
             console.error(error);
+        }
+        finally{
+            setLoading(false);
         }
     };
 
     const update = async (e) => {
         try {
             e.preventDefault();
-            const response = await updateProfile(userData.userName, userData.imageUrl);
+            setLoading(true);
+            const response = await updateProfile(userName, userImageUrl);
             console.log(response);
             alert("Update successful!");
             setShow(false);
         } catch (error) {
             console.error(error);
+        }finally{   
+            setLoading(false);
         }
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setUserData(prev => ({
-            ...prev,
-            [name]: value,
-        }));
+        if (name === 'userName') {
+            setUserName(value);
+        } else if (name === 'imageUrl') {
+            setUserImageUrl(value);
+        }
     };
 
     const handleVerifyEmail = async () => {
@@ -70,8 +97,9 @@ const dispath=useDispatch();
     };
 
     const handleLogout = () => {
+        dispatch(resetState());
+        dispatch(logout());
         localStorage.removeItem('expense-user');
-        dispath(logout())
         navigate('/', { replace: true });
     };
 
@@ -79,6 +107,15 @@ const dispath=useDispatch();
         <div style={styles.container}>
             <div style={styles.header}>
                 <div style={styles.welcomeText}>
+                        <img 
+                            src={userImageUrl?userImageUrl:'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'} 
+                            alt="Profile" 
+                            style={styles.profilePicture}
+                            onError={(e) => {
+                                e.target.src = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+                            }}
+                        />
+                    
                     <p style={styles.welcomeMessage}>Welcome to the Expense Tracker!!!</p>
                 </div>
                 <div style={styles.buttonContainer}>
@@ -119,7 +156,8 @@ const dispath=useDispatch();
                             Cancel
                         </button>
                     </div>
-                    <div style={styles.inputContainer}>
+
+                    {!loading?(<div style={styles.inputContainer}>
                         <CustomInput
                             type="text"
                             onChange={handleChange}
@@ -127,7 +165,7 @@ const dispath=useDispatch();
                             name="userName"
                             required={true}
                             placeholder="Full Name"
-                            value={userData.userName}
+                            value={userName}
                             title="Full Name"
                         />
                         <CustomInput
@@ -137,14 +175,18 @@ const dispath=useDispatch();
                             name="imageUrl"
                             required={true}
                             placeholder="URL"
-                            value={userData.imageUrl}
+                            value={userImageUrl}
                             title="Profile Photo URL"
                         />
+                    </div>)
+                    :<div style={styles.loadingContainer}>
+                        <p style={{color:"black",fontSize:'20px'}}>Loading...</p>   
                     </div>
+                    }
                     <CustomButton
                         type="button"
                         title="Update"
-                        disabled={!userData.userName || !userData.imageUrl}
+                        disabled={!userName || !userImageUrl}
                         style={styles.updateButton}
                         onClick={update}
                     />

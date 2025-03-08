@@ -6,7 +6,7 @@ const styles = {
         justifyContent: "flex-start",
         alignItems: "center",
         flexDirection: 'column',
-        backgroundColor: 'white',
+        backgroundColor: 'rgba(255, 255, 255, 0.5)', // Changed to make the background visible
     },
     header: {
         display: 'flex',
@@ -14,9 +14,20 @@ const styles = {
         width: '100%',
         border: '1px solid black',
         alignItems: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 1)', // Changed to make the background visible
     },
     welcomeText: {
         padding: 20,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '20px',
+    },
+    profilePicture: {
+        width: '50px',
+        height: '50px',
+        borderRadius: '50%',
+        objectFit: 'cover',
+        border: '2px solid var(--primary-color)',
     },
     welcomeMessage: {
         fontWeight: '500',
@@ -78,6 +89,13 @@ const styles = {
     updateButton: {
         marginTop: 20,
         width: 70,
+    },
+    loadingContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 100,
+        width: '100%',
     },
 };
 export default styles;

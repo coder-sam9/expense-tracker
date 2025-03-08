@@ -1,0 +1,36 @@
+/* Full-screen loading screen */
+.loaderContainer {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.5); /* White overlay */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensures it's on top of other content */
+  }
+  
+  /* Spinner styles */
+  .loader {
+    border: 8px solid rgba(255, 255, 255, 0.3);
+    border-top: 8px solid #00bfff; /* Dark sky blue color */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+  }
+  
+  /* Text style */
+  .text {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #00bfff; /* Dark sky blue color */
+    font-weight: bold;
+  }
+  
+  /* Spin animation for the loader */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
