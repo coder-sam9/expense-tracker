@@ -11,6 +11,7 @@ import {
 
 function AddExpenseForm({ onSubmit, onChange, expense, }) {
     const {premiumActivated,totalExpenses,expenses}=useSelector(state=>state.expenses);
+    const email=JSON.parse(localStorage.getItem('expense-user'))?.email || '';
     
     useEffect(() => {dispatch({ type: "TOGGLE_THEME" })
     
@@ -18,7 +19,7 @@ function AddExpenseForm({ onSubmit, onChange, expense, }) {
     }, [premiumActivated]);
     const dispatchForPremium = useDispatch();
     const activatePremium = () => {
-        dispatchForPremium(activatePremiumThunk());}
+        dispatchForPremium(activatePremiumThunk({email,newStatus:true}));}
     
     const { theme, dispatch } = useContext(ThemeContext);
     const downloadCSV = () => {
@@ -107,8 +108,8 @@ function AddExpenseForm({ onSubmit, onChange, expense, }) {
       
               {premiumActivated &&  <button onClick={() => dispatch({ type: "TOGGLE_THEME" })}>
                     Toggle Theme
-                </button>}
-              {  <button onClick={() => downloadCSV()}>
+                  </button>}
+              {premiumActivated &&  <button onClick={() => downloadCSV()}>
                     Download CSV
                 </button>}
             </form>

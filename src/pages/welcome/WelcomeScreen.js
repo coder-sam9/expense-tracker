@@ -20,14 +20,15 @@ const dispatch=useDispatch();
     const [loading,setLoading]=useState(false);
     const [dataLoading,setDataLoading]=useState(false);
     const navigate = useNavigate();
+    const email=JSON.parse(localStorage.getItem('expense-user'))?.email || '';
 
     useEffect(() => {
         const initializeData = async () => {
           setDataLoading(true);
           try {
             await fetchUser(); // Wait for fetchUser to complete
-            await dispatch(fetchUserPremiumStatusThunk()).unwrap(); // unwrap() to catch thunk errors
-            await dispatch(fetchExpenses()).unwrap();
+            await dispatch(fetchUserPremiumStatusThunk(email)) // unwrap() to catch thunk errors
+            await dispatch(fetchExpenses(email))
           } catch (error) {
             console.error("Initialization failed:", error);
           } finally {

@@ -28,15 +28,17 @@ export const initializeUserApi = async (email) => {
     throw error;
   }
 };
-export const updatePremiumApi = async ( premiumStatus, expenses) => {
+export const updatePremiumApi = async (email,newStatus, expenses) => {
+  console.log("in the update premium api",email);
+  
   try {
     const updatedData = {
-      premiumActivated: premiumStatus, // true or false
-      expenses: expenses, // Preserve existing expenses
+      premiumActivated:newStatus , // true or false
+      // expenses: expenses, // Preserve existing expenses
     };
 
     const response = await axios.put(
-      `${url}${formatEmailForFirebase(userData.email)}.json`,
+      `${url}${formatEmailForFirebase(email)}.json`,
       updatedData,
       { headers: { "Content-Type": "application/json" } }
     );
@@ -49,14 +51,14 @@ export const updatePremiumApi = async ( premiumStatus, expenses) => {
 };
 
 
-export const addExpenseApi = async (category, amount,description) => {
+export const addExpenseApi = async (email,category, amount,description) => {
   try {
     const data={
         category:category,
         amount:amount,
         description:description
     }
-    const response = await axios.post(url+formatEmailForFirebase(userData.email)+':expenses.json', data, {
+    const response = await axios.post(url+formatEmailForFirebase(email)+':expenses.json', data, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -67,11 +69,11 @@ export const addExpenseApi = async (category, amount,description) => {
     throw error;
   }
 };
-export const getExpensesApi = async () => {
+export const getExpensesApi = async (email) => {
   try {
     console.log("in the get call");
     
-    const response = await axios.get(url+formatEmailForFirebase(userData.email)+':expenses.json', {
+    const response = await axios.get(url+formatEmailForFirebase(email)+':expenses.json', {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -84,7 +86,7 @@ export const getExpensesApi = async () => {
     throw error;
   }
 };
-export const updateExpenseApi = async (id,category, amount,description) => {
+export const updateExpenseApi = async (email,id,category, amount,description) => {
   try {
     console.log("in the update call");
     const data={
@@ -92,7 +94,7 @@ export const updateExpenseApi = async (id,category, amount,description) => {
         amount:amount,
         description:description
     }
-    const response = await axios.put(url+formatEmailForFirebase(userData.email)+':expenses/'+id+'.json',data, {
+    const response = await axios.put(url+formatEmailForFirebase(email)+':expenses/'+id+'.json',data, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -103,11 +105,11 @@ export const updateExpenseApi = async (id,category, amount,description) => {
     throw error;
   }
 };
-export const deleteExpenseApi = async (id) => {
+export const deleteExpenseApi = async (email,id) => {
   try {
     console.log("in the delete call");
     
-    const response = await axios.delete(url+formatEmailForFirebase(userData.email)+':expenses/'+id+'.json', {
+    const response = await axios.delete(url+formatEmailForFirebase(email)+':expenses/'+id+'.json', {
         headers: {
           'Content-Type': 'application/json',
         },

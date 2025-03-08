@@ -10,49 +10,34 @@ import {
 
 export const activatePremiumThunk = createAsyncThunk(
   "expenses/activatePremium",
-  async (_, { getState }) => {
-    const state = getState().expenses; // Get current expenses state
-
-    // Convert array to object for Firebase storage
-    const expenses = state.expenses.reduce((acc, expense) => {
-      acc[expense.id] = {
-        category: expense.category,
-        amount: expense.amount,
-        description: expense.description,
-      };
-      return acc;
-    }, {});
+  async ({email,newStatus}) => { // Get current expenses state
+console.log("in the activate premium thunk",email);
 
     // Call the API to update premium status
-    const updatedPremiumStatus = await updatePremiumApi( true, expenses);
+    const updatedPremiumStatus = await updatePremiumApi(email,newStatus);
     return updatedPremiumStatus; // Return the updated status
   }
 );
+
 export const fetchUserPremiumStatusThunk = createAsyncThunk(
   "expenses/fetchUserPremiumStatus",
-  async ( ) => {
-      const user = JSON.parse(localStorage.getItem("expense-user"));
-      if (!user?.email) throw new Error("User not found");
+  async (email) => {
+    // Fetch user data (premium status, total expenses, expenses)
+    const data = await getUserDataApi(email);
 
-      // Fetch user data (premium status, total expenses, expenses)
-      const data = await getUserDataApi(user.email);
-
-      return {
-          premiumActivated: data?.premiumActivated || false,
-      };
+    return {
+      premiumActivated: data?.premiumActivated || false,
+    };
   }
 );
-
-
-
 
 // Async Thunk for fetching expenses
 export const fetchExpenses = createAsyncThunk(
   "expenses/fetchExpenses",
-  async () => {
-    const response = await getExpensesApi();
-    console.log("in the fetch expenses",response);
-    
+  async (email) => {
+    const response = await getExpensesApi(email);
+    console.log("in the fetch expenses", response);
+
     return Object.keys(response || {}).map((key) => ({
       id: key,
       ...response[key],
@@ -63,8 +48,11 @@ export const fetchExpenses = createAsyncThunk(
 // Async Thunk for adding an expense
 export const addExpenseThunk = createAsyncThunk(
   "expenses/addExpense",
-  async (expenseData) => {
+  async ({ email, expenseData }) => {
+    console.log("in the add expense thunk", email, expenseData);
+    
     const response = await addExpenseApi(
+      email,
       expenseData.category,
       expenseData.amount,
       expenseData.description
@@ -81,10 +69,11 @@ export const addExpenseThunk = createAsyncThunk(
 );
 
 // Async Thunk for updating an expense
-export const  updateExpenseThunk = createAsyncThunk(
+export const updateExpenseThunk = createAsyncThunk(
   "expenses/updateExpense",
-  async (expenseData) => {
+  async ({ email, expenseData }) => {
     const response = await updateExpenseApi(
+      email,
       expenseData.id,
       expenseData.category,
       expenseData.amount,
@@ -102,60 +91,61 @@ export const  updateExpenseThunk = createAsyncThunk(
 // Async Thunk for deleting an expense
 export const deleteExpenseThunk = createAsyncThunk(
   "expenses/deleteExpense",
-  async (id) => {
-    await deleteExpenseApi(id);
+  async ({ email, id }) => {
+    await deleteExpenseApi(email, id);
     return id;
   }
 );
-const initialState= {
+
+const initialState = {
   expenses: [],
   totalExpenses: 0,
   premiumActivated: false,
   loading: false,
   error: null,
 };
+
 const expensesSlice = createSlice({
   name: "expenses",
-  initialState:initialState,
+  initialState: initialState,
   reducers: {
     updatePremiumActivation(state) {
       state.premiumActivated = true;
     },
-    resetState(state){
-      return initialState
+    resetState(state) {
+      return initialState;
     }
   },
   extraReducers: (builder) => {
     builder
-    .addCase(fetchUserPremiumStatusThunk.pending, (state) => {
-              state.loading = true;
-          })
-          .addCase(fetchUserPremiumStatusThunk.fulfilled, (state, action) => {
-              state.loading = false;
-              state.premiumActivated = action.payload.premiumActivated;
-          })
-          .addCase(fetchUserPremiumStatusThunk.rejected, (state, action) => {
-              state.loading = false;
-              state.error = action.error.message;
-          })
+      .addCase(fetchUserPremiumStatusThunk.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchUserPremiumStatusThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.premiumActivated = action.payload.premiumActivated;
+      })
+      .addCase(fetchUserPremiumStatusThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
       .addCase(fetchExpenses.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchExpenses.fulfilled, (state, action) => {
-        console.log("in the fetch expenses",action.payload);
-        
+        console.log("in the fetch expenses", action.payload);
+
         state.loading = false;
         state.expenses = action.payload;
-const expensesAmoutn= action.payload.reduce(
+        const expensesAmount = action.payload.reduce(
           (acc, expense) => acc + Number(expense.amount),
           0
         );
-        if (expensesAmoutn > 10000) {
+        if (expensesAmount > 10000) {
           state.premiumActivated = true;
         }
-        state.totalExpenses =expensesAmoutn
-
+        state.totalExpenses = expensesAmount;
       })
       .addCase(fetchExpenses.rejected, (state, action) => {
         state.loading = false;
@@ -233,5 +223,5 @@ const expensesAmoutn= action.payload.reduce(
   },
 });
 
-export const { updatePremiumActivation,resetState } = expensesSlice.actions;
+export const { updatePremiumActivation, resetState } = expensesSlice.actions;
 export default expensesSlice.reducer;

@@ -21,6 +21,7 @@ const ProtectedRoute=({isLogged})=>{
 }
 function App() {
   const userData=JSON.parse(localStorage.getItem('expense-user'));
+  const email=JSON.parse(localStorage.getItem('expense-user'))?.email||'';
   const [loading,setLoading]=useState(false);
 const {isAuthenticated,user}=useSelector(state=>state.authentication)
 const dispatch=useDispatch();
@@ -31,12 +32,13 @@ const dispatch=useDispatch();
     console.log(userData);
     if(userData?.idToken!==undefined){
       // setIsLoggedIn(true)
-     await dispatch(login(userData)).unwrap()
-     await dispatch(fetchUserPremiumStatusThunk()).unwrap()
-     await dispatch(fetchExpenses()).unwrap()
+      dispatch(login(userData))
+      dispatch(fetchUserPremiumStatusThunk(email))
+      dispatch(fetchExpenses(email))
     }
     setLoading(false);
   }
+  initializeData();
   },[])
   if (loading) {
     return <Loader/>

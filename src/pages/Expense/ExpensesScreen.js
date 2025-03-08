@@ -19,6 +19,7 @@
       description: "",
       category: "Food",
     });
+    const email=JSON.parse(localStorage.getItem('expense-user'))?.email || '';
     
     const [isEdit, setIsEdit] = useState(false);
     const { theme } = useContext(ThemeContext);
@@ -33,7 +34,7 @@
       const fetchingExpenses = async () => {
         try { 
           setDataLoading(true);
-          await dispatch(fetchExpenses()).unwrap();}
+          await dispatch(fetchExpenses(email)).unwrap();}
         catch (error) {
           console.error(error);
         } finally {
@@ -48,15 +49,17 @@
     }
 
     const handleAddExpense = (expenseData) => {
-      dispatch(addExpenseThunk(expenseData));
+      console.log("email nd expenseData in handleAddExpense",email,expenseData);
+      
+      dispatch(addExpenseThunk({email,expenseData}));
     };
 
     const handleUpdateExpense = (expenseData) => {
-      dispatch(updateExpenseThunk(expenseData));
+      dispatch(updateExpenseThunk({email,expenseData}));
     };
 
     const handleDeleteExpense = (id) => {
-      dispatch(deleteExpenseThunk(id));
+      dispatch(deleteExpenseThunk({email,id}));
     };
     const handleChange = (e) => {
       const { name, value } = e.target;
@@ -105,7 +108,8 @@
             <h3>Your Expenses</h3>
             <h3>Total Expenses: <span>{totalExpenses}</span> </h3>
             {loading?<p>Loading...</p>:
-            error?<p>Please add expenses</p>:
+            error?<p>{error}</p>:
+            // error?<p>Please add expenses</p>:
             <div className={styles.expensesList}>
               {expenses.map((expense, index) => (
                 <ExpenseItem
